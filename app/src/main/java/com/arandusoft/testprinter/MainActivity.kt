@@ -11,10 +11,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 
@@ -38,6 +35,9 @@ class MainActivity : Activity() {
         val print: Button = findViewById<View>(R.id.print) as Button
         mUsbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         mDeviceList = mUsbManager!!.deviceList
+
+        val aList = mutableListOf<String>()
+
         if (mDeviceList!!.size > 0) {
             mDeviceIterator = mDeviceList!!.values.iterator()
             Toast.makeText(this, "Device List Size: " + java.lang.String.valueOf(mDeviceList!!.size), Toast.LENGTH_SHORT).show()
@@ -56,21 +56,28 @@ DeviceSubClass: ${usbDevice1.deviceSubclass}
 VendorID: ${usbDevice1.vendorId}
 ProductID: ${usbDevice1.productId}
 """
+                aList.add(usbDevice1.deviceName)
                 val interfaceCount = usbDevice1.interfaceCount
                 Toast.makeText(this, "INTERFACE COUNT: $interfaceCount", Toast.LENGTH_SHORT).show()
                 mDevice = usbDevice1
                 Toast.makeText(this, "Device is attached", Toast.LENGTH_SHORT).show()
                 textView.text = usbDevice
             }
+        } else {
+            Toast.makeText(this, "Please attach printer via USB", Toast.LENGTH_SHORT).show()
+        }
+
+        spinner.adapter = ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, aList)
+
+        print.setOnClickListener{
+            print(mConnection, mInterface)
+        }
+        buttonPermisos.setOnClickListener {
+            mDevice = mDeviceList!!.get(spinner.selectedItem.toString())
             mPermissionIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION), 0)
             val filter = IntentFilter(ACTION_USB_PERMISSION)
             registerReceiver(mUsbReceiver, filter)
             mUsbManager!!.requestPermission(mDevice, mPermissionIntent)
-        } else {
-            Toast.makeText(this, "Please attach printer via USB", Toast.LENGTH_SHORT).show()
-        }
-        print.setOnClickListener{
-            print(mConnection, mInterface)
         }
     }
 
