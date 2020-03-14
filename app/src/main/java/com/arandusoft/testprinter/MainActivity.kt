@@ -9,11 +9,13 @@ import android.content.IntentFilter
 import android.hardware.usb.*
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import java.lang.Exception
 
 
 class MainActivity : Activity() {
@@ -105,8 +107,12 @@ ProductID: ${usbDevice1.productId}
                         if (device != null) {
                             //call method to set up device communication
                             mInterface = device.getInterface(0)
-                            mEndPoint = mInterface!!.getEndpoint(1) // 0 IN and  1 OUT to printer.
-                            mConnection = mUsbManager!!.openDevice(device)
+                            try {
+                                mEndPoint = mInterface!!.getEndpoint(1) // 0 IN and  1 OUT to printer.
+                                mConnection = mUsbManager!!.openDevice(device)
+                            } catch (e: Exception) {
+                                Log.e("USBDEVICE", "Error en dispositivo ${device.productName} ${e.message}")
+                            }
                         }
                     } else {
                         Toast.makeText(context, "PERMISSION DENIED FOR THIS DEVICE", Toast.LENGTH_SHORT).show()
