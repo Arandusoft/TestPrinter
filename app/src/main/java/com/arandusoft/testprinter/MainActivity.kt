@@ -15,6 +15,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 
 
@@ -111,6 +112,8 @@ ProductID: ${usbDevice1.productId}
                                 mEndPoint = mInterface!!.getEndpoint(1) // 0 IN and  1 OUT to printer.
                                 mConnection = mUsbManager!!.openDevice(device)
                             } catch (e: Exception) {
+                                debugLog.text = debugLog.text.toString() + "Error en dispositivo ${device.productName} : ${e.message}"
+                                Toast.makeText(this@MainActivity, "Error en dispositivo ${device.productName} : ${e.message}", Toast.LENGTH_LONG).show()
                                 Log.e("USBDEVICE", "Error en dispositivo ${device.productName} ${e.message}")
                             }
                         }
